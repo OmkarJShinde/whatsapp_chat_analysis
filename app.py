@@ -2,7 +2,8 @@ import streamlit as st
 import preprocessor,helper
 import matplotlib.pyplot as plt
 import seaborn as sns
-
+import matplotlib.font_manager as fm
+import os
 
 st.sidebar.title('Whatsapp Chat Analysis')
 
@@ -117,14 +118,57 @@ if uploaded_file is not None:
         
 
         # emoji Analysis 
-        emoji_df = helper.emoji_helper(selected_user,df)
+        # emoji_df = helper.emoji_helper(selected_user,df)
+        # st.title("Emoji Analysis")
+
+        # col1,col2 = st.columns(2)
+
+        # with col1:
+        #     st.dataframe(emoji_df)
+        # with col2:
+        #     fig,ax = plt.subplots()
+        #     ax.pie(emoji_df[1].head(),labels=emoji_df[0].head(),autopct="%0.2f")
+        #     st.pyplot(fig)
+
+        # Emoji font setup
+        if os.name == 'nt':
+        # For Windows
+            emoji_font_path = "C:/Windows/Fonts/seguiemj.ttf"
+        else:
+        # For Linux (you can customize this path based on where you install the font)
+            emoji_font_path = "/NotoColorEmoji.ttf"
+
+        # Register emoji font
+        prop = fm.FontProperties(fname=emoji_font_path)
+        plt.rcParams['font.family'] = prop.get_name()
+
+        # Inside your Streamlit app
+        # Assume `df` and `selected_user` are already defined earlier in your code
+
+        # Emoji Analysis
+        emoji_df = helper.emoji_helper(selected_user, df)
         st.title("Emoji Analysis")
 
-        col1,col2 = st.columns(2)
+        col1, col2 = st.columns(2)
 
         with col1:
             st.dataframe(emoji_df)
+
         with col2:
-            fig,ax = plt.subplots()
-            ax.pie(emoji_df[1].head(),labels=emoji_df[0].head(),autopct="%0.2f")
+            fig, ax = plt.subplots()
+
+            # Draw pie chart
+            wedges, texts, autotexts = ax.pie(
+                emoji_df[1].head(),
+                labels=emoji_df[0].head(),
+                autopct="%0.2f"
+            )
+
+            # Apply emoji-friendly font
+            for text in texts + autotexts:
+                text.set_fontproperties(prop)
+
             st.pyplot(fig)
+
+
+        
